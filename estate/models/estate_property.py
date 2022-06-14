@@ -10,7 +10,9 @@ class EstateProperty(models.Model):
     name = fields.Char(required=True, default="Unknown")
     description = fields.Text()
     postcode = fields.Char()
-    date_availability = fields.Date(default=lambda self: fields.Date.today(),
+    date_availability = fields.Date(default=lambda self:
+                                    fields.Date.add(fields.Date.today(),
+                                                    month=3),
                                     copy=False)
     expected_price = fields.Float(required=True)
     selling_price = fields.Float(readonly=True, copy=False)
@@ -32,6 +34,6 @@ class EstateProperty(models.Model):
         selection=[('new', 'New'), ('received', 'Offer Received'),
                    ('accepted', 'Offer Accepted'), ('sold', 'Sold'),
                    ('cancelled', 'Cancelled')],
-        help="The status of this property.",
+        help="The current status of this property.",
         default='new',
     )
