@@ -24,9 +24,11 @@
             <form string="Property">
                 <sheet>
                     <div class="oe_title">
-                        <!-- <div class="oe_edit_only">
+                        <!-- what is the use of this?
+                        <div class="oe_edit_only">
                             <label for="name" />
-                        </div> -->
+                        </div>
+                        -->
                         <h1>
                             <field name="name" />
                         </h1>
@@ -60,8 +62,30 @@
         </field>
     </record>
 
+    <record id="estate_propert_view_search" model="ir.ui.view">
+        <field name="name">estate.property.search</field>
+        <field name="model">estate.property</field>
+        <field name="arch" type="xml">
+            <search string="Search...">
+                <field name="name" string="Title" />
+                <field name="postcode" string="Postcode" />
+                <field name="expected_price" string="Expected Price" />
+                <field name="bedrooms" string="Bedrooms" />
+                <field name="living_area" string="Living Area (sqm)" />
+                <field name="facades" string="Facades" />
+                <separator />
+                <filter string="Available" name="state"
+                domain="['|', ('state', '=', 'new'),
+                         ('state', '=', 'received')]" />
+                <group expand="1" string="Group By">
+                    <filter string="Postcode" name="postcode" context="{'group_by':'postcode'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="estate_property_action" model="ir.actions.act_window">
-        <field name="name">Listings</field>
+        <field name="name">Properties</field>
         <field name="res_model">estate.property</field>
         <field name="view_mode">tree,form</field>
     </record>
