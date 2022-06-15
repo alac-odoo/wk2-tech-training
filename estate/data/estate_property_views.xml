@@ -39,6 +39,7 @@
                         </group>
                         <group>
                             <field name="expected_price" />
+                            <field name="best_price" />
                             <field name="selling_price" />
                         </group>
                     </group>
@@ -53,14 +54,11 @@
                                 <field name="garden" />
                                 <field name="garden_area" />
                                 <field name="garden_orientation" />
+                                <field name="total_area" />
                             </group>
                         </page>
                         <page string="Offers">
-                            <group>
-                                <field name="price" widget="one2many" />
-                                <field name="partner_id" string="Partner" widget="one2many" />
-                                <field name="status" widget="one2many" />
-                            </group>
+                            <field name="offer_ids" />
                         </page>
                         <page string="Other Info">
                             <group>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class EstateProperty(models.Model):
@@ -26,6 +26,8 @@ class EstateProperty(models.Model):
                    ('south', 'South'), ('west', 'West')],
         help="If in between directions, choose North or South."
     )
+    total_area = fields.Integer(compute="_compute_total_area",
+                                readonly=True)
     active = fields.Boolean(default=True)
     state = fields.Selection(
         string='Status',
@@ -44,3 +46,15 @@ class EstateProperty(models.Model):
     offer_ids = fields.One2many("estate.property.offer",
                                 "property_id",
                                 string="Offer")
+    best_price = fields.Integer(compute="_compute_best_price",
+                                readonly=True)
+    
+    @api.depends('living_area', 'garden_area')
+    def _compute_total_area(self):
+        for record in self:
+            record.total_area = record.living_area + record.garden_area
+    
+    @api.depends('offer_ids.price')
+    def _compute_best_price(self):
+        for record in self:
+            record.best_price = record.offer_ids.price
