@@ -25,18 +25,12 @@
             <form string="Property">
                 <sheet>
                     <div class="oe_title">
-                        <!-- what is the use of this?
-                        <div class="oe_edit_only">
-                            <label for="name" />
-                        </div>
-                        -->
+                        <label for="name" class="oe_edit_only" />
                         <h1>
                             <field name="name" />
                         </h1>
                     </div>
-                    <group>
-                        <field name="tag_ids" widget="many2many_tags" />
-                    </group>
+                    <field name="tag_ids" widget="many2many_tags" />
                     <group>
                         <group>
                             <field name="property_type_id" />
@@ -59,6 +53,13 @@
                                 <field name="garden" />
                                 <field name="garden_area" />
                                 <field name="garden_orientation" />
+                            </group>
+                        </page>
+                        <page string="Offers">
+                            <group>
+                                <field name="price" widget="one2many" />
+                                <field name="partner_id" string="Partner" widget="one2many" />
+                                <field name="status" widget="one2many" />
                             </group>
                         </page>
                         <page string="Other Info">
@@ -96,56 +97,9 @@
         </field>
     </record>
 
-    <record id="estate_property_type_view_form" model="ir.ui.view">
-        <field name="name">estate.property.type.view.form</field>
-        <field name="model">estate.property.type</field>
-        <field name="arch" type="xml">
-            <form string="Type">
-                <sheet>
-                    <div class="oe_title">
-                        <!-- what is the use of this?
-                        <div class="oe_edit_only">
-                            <label for="name" />
-                        </div>
-                        -->
-                        <h1>
-                            <field name="name" />
-                        </h1>
-                    </div>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="estate_property_tag_view_form" model="ir.ui.view">
-        <field name="name">estate.property.tag.view.form</field>
-        <field name="model">estate.property.tag</field>
-        <field name="arch" type="xml">
-            <form string="Type">
-                <sheet>
-                    <group>
-                        <field name="name" />
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
     <record id="estate_property_action" model="ir.actions.act_window">
         <field name="name">Properties</field>
         <field name="res_model">estate.property</field>
         <field name="view_mode">tree,form</field>
-    </record>
-
-    <record id="estate_property_type_action" model="ir.actions.act_window">
-        <field name="name">Property Types</field>
-        <field name="res_model">estate.property.type</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
-    <record id="estate_property_tag_action" model="ir.actions.act_window">
-        <field name="name">Property Tags</field>
-        <field name="res_model">estate.property.tag</field>
-        <field name="view_mode">list,form</field>
     </record>
 </odoo>
