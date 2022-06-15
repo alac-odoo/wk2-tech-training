@@ -26,8 +26,7 @@ class EstateProperty(models.Model):
                    ('south', 'South'), ('west', 'West')],
         help="If in between directions, choose North or South."
     )
-    total_area = fields.Integer(compute="_compute_total_area",
-                                readonly=True)
+    total_area = fields.Integer(compute="_compute_total_area")
     active = fields.Boolean(default=True)
     state = fields.Selection(
         string='Status',
@@ -46,15 +45,16 @@ class EstateProperty(models.Model):
     offer_ids = fields.One2many("estate.property.offer",
                                 "property_id",
                                 string="Offer")
-    best_price = fields.Integer(compute="_compute_best_price",
-                                readonly=True)
-    
+    best_price = fields.Float(compute="_compute_best_price")
+
     @api.depends('living_area', 'garden_area')
     def _compute_total_area(self):
         for record in self:
             record.total_area = record.living_area + record.garden_area
-    
-    @api.depends('offer_ids.price')
+
+    @api.depends('offer_ids')
     def _compute_best_price(self):
         for record in self:
-            record.best_price = record.offer_ids.price
+            # catches properties with no offers
+            record.best_price = max(record.mapped('offer_ids.price')) \
+                if record.mapped('offer_ids.price') else 0.00
