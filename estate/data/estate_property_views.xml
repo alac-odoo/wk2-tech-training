@@ -24,8 +24,10 @@
         <field name="arch" type="xml">
             <form string="Property">
                 <header>
-                    <button type="object" name="action_status_sold" string="Sold" />
-                    <button type="object" name="action_status_cancel" string="Cancel" />
+                    <button type="object" name="action_status_sold" string="Sold"
+                        attrs="{'invisible': ['|', ('state', '=', 'sold'), ('state', '=', 'cancelled')]}" />
+                    <button type="object" name="action_status_cancel" string="Cancel"
+                        attrs="{'invisible': ['|', ('state', '=', 'sold'), ('state', '=', 'cancelled')]}" />
                     <!-- top right widget, fields only one per list or form view -->
                     <field name="state" widget="statusbar" statusbar_visible="new,received,accepted,sold"/>
                 </header>
@@ -36,10 +38,11 @@
                             <field name="name" />
                         </h1>
                     </div>
-                    <field name="tag_ids" widget="many2many_tags" />
+                    <!-- in conjunction with color = fields.Integer() in related model -->
+                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
                     <group>
                         <group>
-                            <field name="property_type_id" />
+                            <field name="property_type_id" attrs="{'can_write': False}" options="{'no_create': True}"/>
                             <field name="postcode" />
                             <field name="date_availability" />
                         </group>
@@ -58,13 +61,16 @@
                                 <field name="facades" />
                                 <field name="garage" />
                                 <field name="garden" />
-                                <field name="garden_area" />
-                                <field name="garden_orientation" />
+                                <field name="garden_area" attrs="{'invisible': [('garden', '=', False)]}" />
+                                <field name="garden_orientation" attrs="{'invisible': [('garden', '=', False)]}" />
                                 <field name="total_area" />
                             </group>
                         </page>
                         <page string="Offers">
-                            <field name="offer_ids" />
+                            <!-- readonly attr doesn't provide server-side security (only client) -->
+                            <field name="offer_ids"
+                                attrs="{'readonly': ['|', '|', ('state', '=', 'accepted'),
+                                    ('state', '=', 'sold'), ('state', '=', 'cancelled')]}" />
                         </page>
                         <page string="Other Info">
                             <group>
@@ -91,11 +97,11 @@
                 <field name="facades" string="Facades" />
                 <field name="property_type_id" string="Property Type" />
                 <separator />
-                <filter string="Available" name="state"
-                domain="['|', ('state', '=', 'new'),
-                         ('state', '=', 'received')]" />
+                <filter  name="state" string="Available" 
+                    domain="['|', ('state', '=', 'new'), ('state', '=', 'received')]" />
                 <group expand="1" string="Group By">
-                    <filter string="Postcode" name="postcode" context="{'group_by':'postcode'}" />
+                    <filter name="postcode" string="Postcode" 
+                        context="{'group_by':'postcode'}" />
                 </group>
             </search>
         </field>
