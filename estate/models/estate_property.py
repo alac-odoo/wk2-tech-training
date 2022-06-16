@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, exceptions
+from odoo.tools import float_compare
 
 
 class EstateProperty(models.Model):
@@ -47,6 +48,13 @@ class EstateProperty(models.Model):
                                 string="Offer")
     best_price = fields.Float(compute="_compute_best_price")
 
+    _sql_constraints = [('check_expected_price',
+                         'CHECK (expected_price > 0)',
+                         'The expected price must be higher than 0.00.'),
+                        ('check_selling_price',
+                         'CHECK (selling_price > 0)',
+                         'The selling price must be higher than 0.00.')]
+
     @api.depends('living_area', 'garden_area')
     def _compute_total_area(self):
         for record in self:
@@ -81,3 +89,13 @@ class EstateProperty(models.Model):
                 raise exceptions.UserError(
                     "Sold properties cannot be cancelled.")
         return True
+
+    @api.constrains('selling_price')
+    def _check_selling_price(self):
+        for record in self:
+            if float_compare(record.offer_ids.price,
+                             (record.expected_price * 9) / 10,
+                             precision_digits=2) == -1:
+                raise exceptions.ValidationError("""The selling price must be
+                    90% of the expected price! You must reduce the expected
+                    price if you want to accept this offer.""")
