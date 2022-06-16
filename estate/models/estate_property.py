@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, exceptions
-from odoo.tools import float_compare
+from odoo import api, fields, models, exceptions, tools
 
 
 class EstateProperty(models.Model):
     _name = "estate.property"
     _description = "Contains information about an estate property."
+    _order = "property_type_id"
+    # also equivalent <[view] default_order="[field] [options]">
+    # works for many2one but not one2many
 
     name = fields.Char(required=True, default="Unknown")
     description = fields.Text()
@@ -90,12 +92,14 @@ class EstateProperty(models.Model):
                     "Sold properties cannot be cancelled.")
         return True
 
+    # SQL constraints are more efficient than python constraints
+    # try to stick with SQL when performance matters
     @api.constrains('selling_price')
     def _check_selling_price(self):
         for record in self:
-            if float_compare(record.offer_ids.price,
-                             (record.expected_price * 9) / 10,
-                             precision_digits=2) == -1:
+            if tools.float_compare(record.offer_ids.price,
+                                   (record.expected_price * 9) / 10,
+                                   precision_digits=2) == -1:
                 raise exceptions.ValidationError("""The selling price must be
                     90% of the expected price! You must reduce the expected
                     price if you want to accept this offer.""")

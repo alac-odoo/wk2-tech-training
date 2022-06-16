@@ -26,6 +26,8 @@
                 <header>
                     <button type="object" name="action_status_sold" string="Sold" />
                     <button type="object" name="action_status_cancel" string="Cancel" />
+                    <!-- top right widget, fields only one per list or form view -->
+                    <field name="state" widget="statusbar" statusbar_visible="new,received,accepted,sold"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
