@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, exceptions
 
 
 class EstatePropertyOffer(models.Model):
@@ -34,6 +34,30 @@ class EstatePropertyOffer(models.Model):
         for record in self:
             record.date_deadline = fields.Date.today()
 
+    # note: do not use api.onchange() to add business logic
+    # because onchange only works in form view
+    # TODO: rework to use api.depends()
     @api.onchange('date_deadline')
-    def _onchange_date_deadline(self):
+    def _onchange_validity(self):
         self.validity = (self.date_deadline - self.create_date).days
+        self.validity = self.validity if self.validity > 0 else 0
+
+    @api.depends('property_id', 'price', 'partner_id')
+    def action_accept_offer(self):
+        for record in self:
+            if (record.property_id.state == 'accepted') | \
+                    (record.property_id.state == 'sold') | \
+                    (record.property_id.state == 'cancelled'):
+                raise exceptions.UserError(
+                    "An offer was already accepted or the property has sold.")
+            else:
+                record.status = 'accepted'
+                record.property_id.state = 'accepted'
+                record.property_id.selling_price = record.price
+                record.property_id.buyer = record.partner_id
+        return True
+
+    def action_refuse_offer(self):
+        for record in self:
+            record.status = 'refused'
+        return True
