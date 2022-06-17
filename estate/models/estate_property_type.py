@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class EstatePropertyType(models.Model):
@@ -13,9 +13,21 @@ class EstatePropertyType(models.Model):
     property_ids = fields.One2many("estate.property",
                                    "property_type_id",
                                    string="Title")
+
+    offer_ids = fields.One2many("estate.property.offer",
+                                "property_type_id",
+                                string="Offers")
+    offer_count = fields.Integer(compute="_compute_offer_count",
+                                 store=True)
+
     sequence = fields.Integer(string="Sequence", default=1,
                               help="Order the property types manually.")
 
     _sql_constraints = [('unique_type',
                          'unique (name)',
                          'This type of property already exists.')]
+
+    @api.depends('offer_ids')
+    def _compute_offer_count(self):
+        for record in self:
+            record.offer_count = len(record.offer_ids)
